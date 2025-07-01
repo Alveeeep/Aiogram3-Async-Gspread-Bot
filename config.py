@@ -4,9 +4,6 @@ from pydantic import SecretStr
 
 class Settings(BaseSettings):
     TOKEN: SecretStr
-    # Данные для подключения к Telegram
-    API_ID: SecretStr
-    API_HASH: SecretStr
 
     # Данные для подключения к Google Sheets
     SHEET_ID: SecretStr
