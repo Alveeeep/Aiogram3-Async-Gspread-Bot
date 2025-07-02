@@ -20,13 +20,14 @@ def get_creds():
     return scoped
 
 
-async def add_record_to_table(worksheet: AsyncioGspreadWorksheet, start_col_index, end_col_index, new_data):
+async def get_last_row(worksheet: AsyncioGspreadWorksheet, start_col_index):
     # Получаем все значения в ключевой колонке (например, первая из диапазона)
     col_values = await worksheet.col_values(start_col_index)
     last_filled_row = len(col_values)
     next_row = last_filled_row + 1
+    return next_row
 
-    # Определяем буквы столбцов (для колонок > 26 потребуется более сложное преобразование)
+async def add_record_to_table(worksheet: AsyncioGspreadWorksheet, next_row,  start_col_index, end_col_index, new_data):
     def col_num_to_letter(n):
         result = ''
         while n > 0:
@@ -56,9 +57,12 @@ async def write_for_change_usdt(message: str):
         data = await parse_message(message)
         price_dict = await fetch_simple_price(ids="tether", vs_currencies=data['Валюта'])
         price = 1 / price_dict.get('tether').get(data['Валюта'])
+        last_row = await get_last_row(aws, 23)
         row = [datetime.now().strftime("%d.%m.%Y"), data.get('Сумма usdt'),
                data.get('Сумма в фиате') + ' ' + data.get('Валюта'), price]
-        await add_record_to_table(aws, 23, 26)
+        await add_record_to_table(aws, last_row, 23, 26, row)
+        row = [data.get('Менеджер')]
+        await add_record_to_table(aws, last_row, ) # добавить вариант обновления одной ячейки
     else:
         await aws.update_cell()
 
