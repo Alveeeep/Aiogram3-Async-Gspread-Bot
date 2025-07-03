@@ -13,3 +13,7 @@ async def fetch_simple_price(ids: str, vs_currencies: str) -> dict:
         async with session.get(url, headers=headers) as response:
             data = await response.json()
             return data
+
+
+async def fetch_fiat_price():
+    url = f"https://api.exchangeratesapi.io/v1/"
