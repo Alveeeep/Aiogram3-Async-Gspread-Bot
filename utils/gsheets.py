@@ -27,7 +27,8 @@ async def get_last_row(worksheet: AsyncioGspreadWorksheet, start_col_index):
     next_row = last_filled_row + 1
     return next_row
 
-async def add_record_to_table(worksheet: AsyncioGspreadWorksheet, next_row,  start_col_index, end_col_index, new_data):
+
+async def add_record_to_table(worksheet: AsyncioGspreadWorksheet, next_row, new_data, start_col_index, end_col_index=0):
     def col_num_to_letter(n):
         result = ''
         while n > 0:
@@ -36,11 +37,13 @@ async def add_record_to_table(worksheet: AsyncioGspreadWorksheet, next_row,  sta
         return result
 
     start_col_letter = col_num_to_letter(start_col_index)
-    end_col_letter = col_num_to_letter(end_col_index)
-
     start_cell = f"{start_col_letter}{next_row}"
-    end_cell = f"{end_col_letter}{next_row}"
-    cell_range = f"{start_cell}:{end_cell}"
+    if end_col_index > 0:
+        end_col_letter = col_num_to_letter(end_col_index)
+        end_cell = f"{end_col_letter}{next_row}"
+        cell_range = f"{start_cell}:{end_cell}"
+    else:
+        cell_range = start_cell
 
     # Обновляем ячейки
     await worksheet.update([new_data], cell_range)
@@ -53,18 +56,48 @@ async def write_for_change_usdt(message: str):
     agc = await agcm.authorize()
     exchanges = await agc.open_by_key(config.SHEET_ID.get_secret_value())
     aws = await exchanges.worksheet('Обмены')
-    if 'Покупка' in message:
-        data = await parse_message(message)
-        price_dict = await fetch_simple_price(ids="tether", vs_currencies=data['Валюта'])
-        price = 1 / price_dict.get('tether').get(data['Валюта'])
-        last_row = await get_last_row(aws, 23)
-        row = [datetime.now().strftime("%d.%m.%Y"), data.get('Сумма usdt'),
-               data.get('Сумма в фиате') + ' ' + data.get('Валюта'), price]
-        await add_record_to_table(aws, last_row, 23, 26, row)
-        row = [data.get('Менеджер')]
-        await add_record_to_table(aws, last_row, ) # добавить вариант обновления одной ячейки
+    tranz = await exchanges.worksheet('Транзакции')
+    data = await parse_message(message)
+    price_dict = await fetch_simple_price(ids="tether", vs_currencies=data['Валюта'])
+    price = 1 / price_dict.get('tether').get(data['Валюта'])
+    part_one = [datetime.now().strftime("%d.%m.%Y"), data.get('Сумма usdt'),
+                data.get('Сумма в фиате') + ' ' + data.get('Валюта'), price]
+    if 'Покупка' in data.get('Тип'):
+        part_two = [data.get('Менеджер')]
+        if 'CHF' in data.get('Валюта'):
+            last_row = await get_last_row(aws, 23)
+            await add_record_to_table(aws, last_row, part_one, 23, 26)
+            await add_record_to_table(aws, last_row, part_two, start_col_index=30)
+        elif 'EUR' in data.get('Валюта'):
+            last_row = await get_last_row(aws, 34)
+            await add_record_to_table(aws, last_row, part_one, 34, 37)
+            await add_record_to_table(aws, last_row, part_two, start_col_index=41)
+        # Часть Транзакций
+        last_row = await get_last_row(tranz, 1)
+        data_to_add = [datetime.now().strftime("%d.%m.%Y"), data.get('Сумма usdt'), 'Внешний источник',
+                       data.get('Источник сделки')]
+        await add_record_to_table(tranz, last_row, data_to_add, 1, 4)
+        data_to_add = [datetime.now().strftime("%d.%m.%Y"), data.get('Сумма в фиате'), 'Внешний источник',
+                       data.get('Фиат счёт')]
+        await add_record_to_table(tranz, last_row + 1, data_to_add, 1, 4)
     else:
-        await aws.update_cell()
+        part_two = [data.get('Фиат счёт'), data.get('Менеджер')]
+        if 'CHF' in data.get('Валюта'):
+            last_row = await get_last_row(aws, 1)
+            await add_record_to_table(aws, last_row, part_one, 1, 4)
+            await add_record_to_table(aws, last_row, part_two, 8, 9)
+        elif 'EUR' in data.get('Валюта'):
+            last_row = await get_last_row(aws, 12)
+            await add_record_to_table(aws, last_row, part_one, 12, 15)
+            await add_record_to_table(aws, last_row, part_two, 19, 20)
+        # Часть Транзакций
+        last_row = await get_last_row(tranz, 1)
+        data_to_add = [datetime.now().strftime("%d.%m.%Y"), data.get('Сумма usdt'), data.get('Источник сделки'),
+                       'Внешний источник']
+        await add_record_to_table(tranz, last_row, data_to_add, 1, 4)
+        data_to_add = [datetime.now().strftime("%d.%m.%Y"), data.get('Сумма в фиате'), data.get('Фиат счёт'),
+                       'Внешний источник']
+        await add_record_to_table(tranz, last_row + 1, data_to_add, 1, 4)
 
 
 async def write_for_change_other(message: str):
