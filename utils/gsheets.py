@@ -58,10 +58,8 @@ async def write_for_change_usdt(message: str):
     aws = await exchanges.worksheet('Обмены')
     tranz = await exchanges.worksheet('Транзакции')
     data = await parse_message(message)
-    price_dict = await fetch_simple_price(ids="tether", vs_currencies=data['Валюта'])
-    price = 1 / price_dict.get('tether').get(data['Валюта'])
     part_one = [datetime.now().strftime("%d.%m.%Y"), data.get('Сумма usdt'),
-                data.get('Сумма в фиате') + ' ' + data.get('Валюта'), price]
+                data.get('Сумма в фиате') + ' ' + data.get('Валюта'), f'=1 / GOOGLEFINANCE("CURRENCY:USDT{data.get('Валюта')}")']
     if 'Покупка' in data.get('Тип'):
         part_two = [data.get('Менеджер')]
         if 'CHF' in data.get('Валюта'):

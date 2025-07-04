@@ -15,5 +15,3 @@ async def fetch_simple_price(ids: str, vs_currencies: str) -> dict:
             return data
 
 
-async def fetch_fiat_price():
-    url = f"https://api.exchangeratesapi.io/v1/"
