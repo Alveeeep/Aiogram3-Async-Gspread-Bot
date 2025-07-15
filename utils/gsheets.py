@@ -137,12 +137,17 @@ async def write_for_internal_transfer(message: str):
     aws = await transactions.worksheet('Транзакции')
     data = await parse_message(message)
     last_row = await get_last_row(aws, 1)
-    data_to_add = [datetime.now().strftime("%d.%m.%Y"), data.get('Сумма usdt'), data.get('Источник сделки'),
-                   'Внешний источник']
-    await add_record_to_table(aws, last_row, data_to_add, 1, 4)
+    data_to_add = [datetime.now().strftime("%d.%m.%Y"), data.get('Сумма'), data.get('Счёт откуда'),
+                   data.get('Счёт куда'), data.get('Комментарий')]
+    await add_record_to_table(aws, last_row, data_to_add, 1, 5)
 
 
 async def write_for_oborotka(message: str):
     agc = await agcm.authorize()
     oborotka = await agc.open_by_key(config.SHEET_ID.get_secret_value())
     aws = await oborotka.worksheet('Оборотка')
+    data = await parse_message(message)
+    last_row = await get_last_row(aws, 1)
+    data_to_add = [datetime.now().strftime("%d.%m.%Y"), data.get('Сумма'), data.get('Валюта'),
+                   data.get('Бенефициар'), data.get('Комментарий')]
+    await add_record_to_table(aws, last_row, data_to_add, 1, 5)
