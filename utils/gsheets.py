@@ -4,8 +4,7 @@ from datetime import datetime
 from config import config
 import gspread_asyncio
 from gspread_asyncio import AsyncioGspreadWorksheet
-from re_msg import parse_message
-from currency import fetch_simple_price
+from utils.re_msg import parse_message
 # from google-auth package
 from google.oauth2.service_account import Credentials
 
