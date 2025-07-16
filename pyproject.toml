@@ -10,6 +10,7 @@ dependencies = [
     "aiohttp>=3.11.18",
     "gspread>=6.0",
     "gspread-asyncio>=2.0.0",
+    "loguru>=0.7.3",
     "pycoingecko>=3.2.0",
     "pydantic-settings>=2.10.1",
 ]
