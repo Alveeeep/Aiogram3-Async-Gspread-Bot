@@ -72,7 +72,7 @@ async def write_for_change_usdt(message: str):
     logger.debug(f"Parsed message data: {data}")
     part_one = [datetime.now().strftime("%d.%m.%Y"), data.get('Сумма usdt'),
                 data.get('Сумма в фиате') + ' ' + data.get('Валюта'),
-                f'=1 / GOOGLEFINANCE("CURRENCY:USDT{data.get('Валюта')}")']
+                f"=1 / GOOGLEFINANCE(\"CURRENCY:USDT{data.get('Валюта')}\")"]
     if 'Покупка' in data.get('Тип'):
         part_two = [data.get('Менеджер')]
         if 'CHF' in data.get('Валюта'):
@@ -133,7 +133,7 @@ async def write_for_change_other(message: str):
         curr = "EURCHF"
     part_one = [datetime.now().strftime("%d.%m.%Y"), get,
                 gave,
-                f'=1 / GOOGLEFINANCE("CURRENCY:{curr}")']
+                f"=1 / GOOGLEFINANCE(\"CURRENCY:USDT{curr}\")"]
     last_row = await get_last_row(aws, 45)
     await add_record_to_table(aws, last_row, part_one, 45, 48)
     # Часть Транзакций
