@@ -25,7 +25,7 @@ async def main():
 
     @dp.message(Command('start'))
     async def test(message: types.Message):
-        await message.answer("Работаю")
+        await message.answer("Ready")
 
     # Запускаем бота и пропускаем все накопленные входящие
     # Да, этот метод можно вызвать даже если у вас поллинг
