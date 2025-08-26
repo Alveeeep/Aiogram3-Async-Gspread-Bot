@@ -1,0 +1,36 @@
+name: Deploy to VPS  # Название workflow
+
+on:
+  push:
+    branches: [ "master" ]  # Триггер на коммиты в main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest  # Среда выполнения (GitHub-hosted runner)
+
+    steps:
+      # Шаг 1: Получаем код из репозитория
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Шаг 2: Настраиваем SSH-ключ для доступа к VPS
+      - name: Add SSH key
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Add server to known_hosts  # ← Ключевое исправление!
+        run: |
+            mkdir -p ~/.ssh
+            ssh-keyscan -H ${{ secrets.VPS_IP }} >> ~/.ssh/known_hosts
+
+      # Шаг 3: Подключаемся к серверу и выполняем команды
+      - name: Deploy
+        run: |
+          ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_IP }} "
+            echo 'Current dir:'; pwd
+            echo 'Files:'; ls
+            cd projects/buhgalter_bot  # Переходим в папку проекта
+            git pull origin master      # Обновляем код
+            docker compose up -d --build  # Пересобираем контейнеры (если используете Docker)
+          "
