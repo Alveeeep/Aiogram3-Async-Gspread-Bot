@@ -5,7 +5,7 @@ from utils.gsheets import write_for_change_usdt, write_for_oborotka, write_for_c
 router = Router()
 
 
-@router.message(F.text.contains("Тип транзакции: Обмен") & F.text.contains("usdt"))
+@router.message(F.text.contains("Тип транзакции: Обмен") & (F.text.contains("usdt") | F.text.contains("USDT")))
 async def message_one(message: Message):
     try:
         await write_for_change_usdt(message.text)
