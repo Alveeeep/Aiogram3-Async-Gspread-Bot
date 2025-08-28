@@ -163,13 +163,16 @@ async def write_for_internal_transfer(message: str):
 
 async def write_for_oborotka(message: str):
     logger.info("Processing oborotka message")
-    agc = await agcm.authorize()
-    oborotka = await agc.open_by_key(config.SHEET_ID.get_secret_value())
-    aws = await oborotka.worksheet('Оборотка')
-    data = await parse_message(message)
-    logger.debug(f"Parsed message data: {data}")
-    last_row = await get_last_row(aws, 1)
-    data_to_add = [datetime.now().strftime("%d.%m.%Y"), data.get('Сумма'), data.get('Валюта'),
-                   data.get('Бенефициар'), data.get('Комментарий')]
-    await add_record_to_table(aws, last_row, data_to_add, 1, 5)
-    logger.info("Successfully processed oborotka")
+    try:
+        agc = await agcm.authorize()
+        oborotka = await agc.open_by_key(config.SHEET_ID.get_secret_value())
+        aws = await oborotka.worksheet('Оборотка')
+        data = await parse_message(message)
+        logger.debug(f"Parsed message data: {data}")
+        last_row = await get_last_row(aws, 1)
+        data_to_add = [datetime.now().strftime("%d.%m.%Y"), data.get('Сумма'), data.get('Валюта'),
+                       data.get('Бенефициар'), data.get('Комментарий')]
+        await add_record_to_table(aws, last_row, data_to_add, 1, 5)
+        logger.info("Successfully processed oborotka")
+    except Exception as e:
+        logger.error(f"Error processing oborotka - {e}")
