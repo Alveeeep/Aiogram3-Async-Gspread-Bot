@@ -52,7 +52,7 @@ async def add_record_to_table(worksheet: AsyncioGspreadWorksheet, next_row, new_
             cell_range = start_cell
 
         logger.debug(f"Adding data to range {cell_range}: {new_data}")
-        await worksheet.update([new_data], cell_range)
+        await worksheet.update([new_data], cell_range, value_input_option='USER_ENTERED')
         logger.info(f"Successfully added data to row {next_row}")
     except Exception as e:
         logger.error(f"Failed to add record: {e}")
@@ -71,7 +71,7 @@ async def write_for_change_usdt(message: str):
     data = await parse_message(message)
     logger.debug(f"Parsed message data: {data}")
     part_one = [datetime.now().strftime("%d.%m.%Y"), data.get('Сумма usdt'),
-                data.get('Сумма в фиате') + ' ' + data.get('Валюта'),
+                data.get('Сумма в фиате'),
                 f"=1 / GOOGLEFINANCE(\"CURRENCY:USDT{data.get('Валюта')}\")"]
     if 'Покупка' in data.get('Тип'):
         part_two = [data.get('Менеджер')]
