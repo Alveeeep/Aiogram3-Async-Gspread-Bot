@@ -14,7 +14,7 @@ async def parse_message(message):
             match = re.match(r'^(.*?):\s*(.*)$', line)
             if match:
                 key, value = match.groups()
-                key = key.strip()
+                key = key.strip().lower()
                 value = value.strip()
                 # Можно дополнительно нормализовать ключи
                 data[key] = value
