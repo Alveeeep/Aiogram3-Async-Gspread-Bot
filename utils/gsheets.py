@@ -52,7 +52,7 @@ async def add_record_to_table(worksheet: AsyncioGspreadWorksheet, next_row, new_
             cell_range = start_cell
 
         logger.debug(f"Adding data to range {cell_range}: {new_data}")
-        await worksheet.update([new_data], cell_range)
+        await worksheet.update([new_data], cell_range, value_input_option='USER_ENTERED')
         logger.info(f"Successfully added data to row {next_row}")
     except Exception as e:
         logger.error(f"Failed to add record: {e}")
@@ -70,44 +70,44 @@ async def write_for_change_usdt(message: str):
     tranz = await exchanges.worksheet('Транзакции')
     data = await parse_message(message)
     logger.debug(f"Parsed message data: {data}")
-    part_one = [datetime.now().strftime("%d.%m.%Y"), data.get('Сумма usdt'),
-                data.get('Сумма в фиате') + ' ' + data.get('Валюта'),
-                f"=1 / GOOGLEFINANCE(\"CURRENCY:USDT{data.get('Валюта')}\")"]
-    if 'Покупка' in data.get('Тип'):
-        part_two = [data.get('Менеджер')]
-        if 'CHF' in data.get('Валюта'):
+    part_one = [datetime.now().strftime("%d.%m.%Y"), data.get('сумма usdt'),
+                data.get('сумма в фиате'),
+                f"=1 / GOOGLEFINANCE(\"CURRENCY:USDT{data.get('валюта')}\")"]
+    if 'Покупка' in data.get('тип'):
+        part_two = [data.get('менеджер')]
+        if 'CHF' in data.get('валюта'):
             last_row = await get_last_row(aws, 23)
             await add_record_to_table(aws, last_row, part_one, 23, 26)
             await add_record_to_table(aws, last_row, part_two, start_col_index=30)
-        elif 'EUR' in data.get('Валюта'):
+        elif 'EUR' in data.get('валюта'):
             last_row = await get_last_row(aws, 34)
             await add_record_to_table(aws, last_row, part_one, 34, 37)
             await add_record_to_table(aws, last_row, part_two, start_col_index=41)
         # Часть Транзакций
         last_row = await get_last_row(tranz, 1)
-        data_to_add = [datetime.now().strftime("%d.%m.%Y"), data.get('Сумма usdt'), 'Внешний источник',
-                       data.get('Источник сделки')]
+        data_to_add = [datetime.now().strftime("%d.%m.%Y"), data.get('сумма usdt'), 'Внешний источник',
+                       data.get('источник сделки')]
         await add_record_to_table(tranz, last_row, data_to_add, 1, 4)
-        data_to_add = [datetime.now().strftime("%d.%m.%Y"), data.get('Сумма в фиате'), data.get('Фиат счёт'),
+        data_to_add = [datetime.now().strftime("%d.%m.%Y"), data.get('сумма в фиате'), data.get('фиат счёт'),
                        'Внешний источник']
         await add_record_to_table(tranz, last_row + 1, data_to_add, 1, 4)
     else:
-        part_two = [data.get('Фиат счёт'), data.get('Менеджер')]
-        if 'CHF' in data.get('Валюта'):
+        part_two = [data.get('фиат счёт'), data.get('менеджер')]
+        if 'CHF' in data.get('валюта'):
             last_row = await get_last_row(aws, 1)
             await add_record_to_table(aws, last_row, part_one, 1, 4)
             await add_record_to_table(aws, last_row, part_two, 8, 9)
-        elif 'EUR' in data.get('Валюта'):
+        elif 'EUR' in data.get('валюта'):
             last_row = await get_last_row(aws, 12)
             await add_record_to_table(aws, last_row, part_one, 12, 15)
             await add_record_to_table(aws, last_row, part_two, 19, 20)
         # Часть Транзакций
         last_row = await get_last_row(tranz, 1)
-        data_to_add = [datetime.now().strftime("%d.%m.%Y"), data.get('Сумма usdt'), data.get('Источник сделки'),
+        data_to_add = [datetime.now().strftime("%d.%m.%Y"), data.get('сумма usdt'), data.get('источник сделки'),
                        'Внешний источник']
         await add_record_to_table(tranz, last_row, data_to_add, 1, 4)
-        data_to_add = [datetime.now().strftime("%d.%m.%Y"), data.get('Сумма в фиате'), 'Внешний источник',
-                       data.get('Фиат счёт')]
+        data_to_add = [datetime.now().strftime("%d.%m.%Y"), data.get('сумма в фиате'), 'Внешний источник',
+                       data.get('фиат счёт')]
         await add_record_to_table(tranz, last_row + 1, data_to_add, 1, 4)
         logger.info("Successfully processed USDT exchange")
 
@@ -124,12 +124,12 @@ async def write_for_change_other(message: str):
     gave = 0
     curr = "CHFEUR"
     # тут расчет что это транзакция типа покупка chf за eur
-    if 'Покупка CHF за EUR' in data.get('Тип'):
-        get = data.get('Сумма CHF')
-        gave = data.get('Сумма EUR')
-    elif 'Покупка EUR за CHF' in data.get('Тип'):
-        get = data.get('Сумма EUR')
-        gave = data.get('Сумма CHF')
+    if 'Покупка CHF за EUR' in data.get('тип'):
+        get = data.get('сумма chf')
+        gave = data.get('сумма eur')
+    elif 'Покупка EUR за CHF' in data.get('тип'):
+        get = data.get('сумма eur')
+        gave = data.get('сумма chf')
         curr = "EURCHF"
     part_one = [datetime.now().strftime("%d.%m.%Y"), get,
                 gave,
@@ -138,11 +138,11 @@ async def write_for_change_other(message: str):
     await add_record_to_table(aws, last_row, part_one, 45, 48)
     # Часть Транзакций
     last_row = await get_last_row(tranz, 1)
-    data_to_add = [datetime.now().strftime("%d.%m.%Y"), gave, data.get('Счёт отправки'),
+    data_to_add = [datetime.now().strftime("%d.%m.%Y"), gave, data.get('счёт отправки'),
                    'Внешний источник']
     await add_record_to_table(tranz, last_row, data_to_add, 1, 4)
     data_to_add = [datetime.now().strftime("%d.%m.%Y"), get, 'Внешний источник',
-                   data.get('Счёт получения')]
+                   data.get('счёт получения')]
     await add_record_to_table(tranz, last_row + 1, data_to_add, 1, 4)
     logger.info("Successfully processed OTHER exchange")
 
@@ -155,8 +155,8 @@ async def write_for_internal_transfer(message: str):
     data = await parse_message(message)
     logger.debug(f"Parsed message data: {data}")
     last_row = await get_last_row(aws, 1)
-    data_to_add = [datetime.now().strftime("%d.%m.%Y"), data.get('Сумма'), data.get('Счёт откуда'),
-                   data.get('Счёт куда'), data.get('Комментарий')]
+    data_to_add = [datetime.now().strftime("%d.%m.%Y"), data.get('сумма'), data.get('счёт откуда'),
+                   data.get('счёт куда'), data.get('комментарий')]
     await add_record_to_table(aws, last_row, data_to_add, 1, 5)
     logger.info("Successfully processed internal transfer")
 
@@ -169,7 +169,7 @@ async def write_for_oborotka(message: str):
     data = await parse_message(message)
     logger.debug(f"Parsed message data: {data}")
     last_row = await get_last_row(aws, 1)
-    data_to_add = [datetime.now().strftime("%d.%m.%Y"), data.get('Сумма'), data.get('Валюта'),
-                   data.get('Бенефициар'), data.get('Комментарий')]
+    data_to_add = [datetime.now().strftime("%d.%m.%Y"), data.get('сумма'), data.get('валюта'),
+                   data.get('бенефициар'), data.get('комментарий')]
     await add_record_to_table(aws, last_row, data_to_add, 1, 5)
     logger.info("Successfully processed oborotka")
