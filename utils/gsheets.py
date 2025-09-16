@@ -201,7 +201,11 @@ async def write_for_oborotka(message: str):
                    data.get('бенефициар'), data.get('комментарий')]
     await add_record_to_table(aws, last_row, data_to_add, 1, 5)
     # Часть Транзакций
-    data_to_add = [datetime.now().strftime("%d.%m.%Y"), data.get('сумма'), data.get('счёт'),
-                   'Внешний источник', 'оборотка']
+    if '-' in data.get('сумма'):
+        data_to_add = [datetime.now().strftime("%d.%m.%Y"), data.get('сумма')[1:], data.get('счёт'),
+                       'Внешний источник', 'оборотка']
+    else:
+        data_to_add = [datetime.now().strftime("%d.%m.%Y"), data.get('сумма'), 'Внешний источник',
+                       data.get('счёт'), 'оборотка']
     await add_record_to_table(tranz, await get_last_row(tranz, 1), data_to_add, 1, 5)
     logger.info("Successfully processed oborotka")
