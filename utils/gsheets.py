@@ -114,6 +114,8 @@ async def write_for_change_usdt(message: str):
                        'Внешний источник']
         await add_record_to_table(tranz, last_row + 1, data_to_add, 1, 4)
     else:
+        part_one = [datetime.now().strftime("%d.%m.%Y"),data.get('сумма в фиате'),
+                    data.get('сумма usdt'), await get_current_exchange_rate(aws, data.get('валюта'))]
         part_three = [data.get('менеджер')]
         if 'CHF' in data.get('валюта'):
             part_two = [data.get('фиат счёт'), data.get('источник сделки', 'Binance'), data.get('из бота')]
