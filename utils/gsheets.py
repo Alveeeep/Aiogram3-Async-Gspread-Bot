@@ -108,7 +108,7 @@ async def write_for_change_usdt(message: str):
         # Часть Транзакций
         last_row = await get_last_row(tranz, 1)
         data_to_add = [datetime.now().strftime("%d.%m.%Y"), data.get('сумма usdt'), 'Внешний источник',
-                       data.get('источник сделки', 'Binance')]
+                       'Binance' if not data.get('источник сделки', 'Binance').strip() else data.get('источник сделки', 'Binance')]
         await add_record_to_table(tranz, last_row, data_to_add, 1, 4)
         data_to_add = [datetime.now().strftime("%d.%m.%Y"), data.get('сумма в фиате'), data.get('фиат счёт'),
                        'Внешний источник']
