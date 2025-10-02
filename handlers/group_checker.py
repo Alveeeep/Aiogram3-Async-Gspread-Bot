@@ -29,7 +29,7 @@ async def message_two(message: Message):
         await message.answer(f"❌Ошибка: {e}")
 
 
-@router.message(F.text.contains("Тип транзакции: Внутренний перевод"))
+@router.message(F.text.contains("Тип транзакции: Внутрен"))
 async def message_three(message: Message):
     try:
         logger.info(f"Processing internal transfer message from {message.from_user.id}")
