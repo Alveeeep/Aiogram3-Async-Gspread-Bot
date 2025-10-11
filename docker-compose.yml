@@ -50,6 +50,6 @@ services:
     depends_on:
       - webapp
 
-  networks:
-    app_network:
-      driver: bridge
+networks:
+  app_network:
+    driver: bridge
