@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Учет транзакций</title>
+    <link rel="stylesheet" href="../static/css/style.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Учет транзакций</h1>
+
+        <!-- Табы -->
+        <div class="tabs">
+            <button class="tab-button active" data-tab="usdt">Обмен USDT</button>
+            <button class="tab-button" data-tab="currency">Обмен валют</button>
+            <button class="tab-button" data-tab="transfer">Внутренний перевод</button>
+            <button class="tab-button" data-tab="oborotka">Оборотка</button>
+        </div>
+
+        <!-- Форма обмена USDT -->
+        <div id="usdt-tab" class="tab-content active">
+            <form id="usdt-form" class="form">
+                <div class="form-group">
+                    <label for="client-fio-usdt">ФИО клиента:</label>
+                    <input type="text" id="client-fio-usdt" name="client_fio" placeholder="Иванов Иван Иванович">
+                </div>
+
+                <div class="form-group">
+                    <label for="client-contact-usdt">Контакт клиента:</label>
+                    <input type="text" id="client-contact-usdt" name="client_contact_info" placeholder="Телеграм/телефон">
+                </div>
+
+                <div class="form-group">
+                    <label for="usdt-transaction-type">Тип операции:</label>
+                    <select id="usdt-transaction-type" name="transaction_type" required>
+                        <option value="">Выберите тип</option>
+                        <option value="Покупка USDT">Покупка USDT</option>
+                        <option value="Продажа USDT">Продажа USDT</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="usdt-amount">Сумма USDT:</label>
+                    <input type="number" id="usdt-amount" name="usdt_amount" step="0.01" min="0.01" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="fiat-amount">Сумма в фиате:</label>
+                    <input type="number" id="fiat-amount" name="fiat_amount" step="0.01" min="0.01" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="currency">Валюта:</label>
+                    <select id="currency" name="currency" required>
+                        <option value="">Выберите валюту</option>
+                        <option value="CHF">CHF</option>
+                        <option value="EUR">EUR</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="fiat-account-group" style="display: none;">
+                    <label for="fiat-account">Фиат счёт:</label>
+                    <input type="text" id="fiat-account" name="fiat_account" placeholder="Введите номер счета">
+                </div>
+
+                <div class="form-group">
+                    <label for="source">Источник сделки:</label>
+                    <input type="text" id="source" name="source" value="Binance" placeholder="Источник сделки">
+                </div>
+
+                <div class="form-group">
+                    <label for="from-bot-usdt">Из бота:</label>
+                    <input type="text" id="from-bot-usdt" name="from_bot" value="Нет" placeholder="Название бота">
+                </div>
+
+                <div class="form-group">
+                    <label for="manager-usdt">Менеджер:</label>
+                    <input type="text" id="manager-usdt" name="manager" placeholder="Имя менеджера">
+                </div>
+
+                <button type="submit" class="btn-submit">Отправить</button>
+            </form>
+        </div>
+
+        <!-- Форма обмена валют -->
+        <div id="currency-tab" class="tab-content">
+            <form id="currency-form" class="form">
+                <div class="form-group">
+                    <label for="client-fio-currency">ФИО клиента:</label>
+                    <input type="text" id="client-fio-currency" name="client_fio" placeholder="Иванов Иван Иванович">
+                </div>
+
+                <div class="form-group">
+                    <label for="client-contact-currency">Контакт клиента:</label>
+                    <input type="text" id="client-contact-currency" name="client_contact_info" placeholder="Телеграм/телефон">
+                </div>
+
+                <div class="form-group">
+                    <label for="exchange-type">Тип обмена:</label>
+                    <select id="exchange-type" name="exchange_type" required>
+                        <option value="">Выберите тип</option>
+                        <option value="Покупка CHF за EUR">Покупка CHF за EUR</option>
+                        <option value="Покупка EUR за CHF">Покупка EUR за CHF</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="chf-amount">Сумма CHF:</label>
+                    <input type="number" id="chf-amount" name="chf_amount" step="0.01" min="0.01" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="eur-amount">Сумма EUR:</label>
+                    <input type="number" id="eur-amount" name="eur_amount" step="0.01" min="0.01" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="from-account-curr">Счёт отправки:</label>
+                    <input type="text" id="from-account-curr" name="from_account" required placeholder="Счет списания">
+                </div>
+
+                <div class="form-group">
+                    <label for="to-account-curr">Счёт получения:</label>
+                    <input type="text" id="to-account-curr" name="to_account" required placeholder="Счет зачисления">
+                </div>
+
+                <div class="form-group">
+                    <label for="manager-currency">Менеджер:</label>
+                    <input type="text" id="manager-currency" name="manager" placeholder="Имя менеджера">
+                </div>
+
+                <div class="form-group">
+                    <label for="from-bot-currency">Из бота:</label>
+                    <input type="text" id="from-bot-currency" name="from_bot" value="Нет" placeholder="Название бота">
+                </div>
+
+                <button type="submit" class="btn-submit">Отправить</button>
+            </form>
+        </div>
+
+        <!-- Форма внутреннего перевода -->
+        <div id="transfer-tab" class="tab-content">
+            <form id="transfer-form" class="form">
+                <div class="form-group">
+                    <label for="transfer-amount">Сумма:</label>
+                    <input type="number" id="transfer-amount" name="amount" step="0.01" min="0.01" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="from-account-transfer">Счёт откуда:</label>
+                    <input type="text" id="from-account-transfer" name="from_account" required placeholder="Счет списания">
+                </div>
+
+                <div class="form-group">
+                    <label for="to-account-transfer">Счёт куда:</label>
+                    <input type="text" id="to-account-transfer" name="to_account" required placeholder="Счет зачисления">
+                </div>
+
+                <div class="form-group">
+                    <label for="transfer-comment">Комментарий:</label>
+                    <textarea id="transfer-comment" name="comment" rows="3" placeholder="Дополнительная информация"></textarea>
+                </div>
+
+                <button type="submit" class="btn-submit">Отправить</button>
+            </form>
+        </div>
+
+        <!-- Форма оборотки -->
+        <div id="oborotka-tab" class="tab-content">
+            <form id="oborotka-form" class="form">
+                <div class="form-group">
+                    <label for="operation-type">Тип операции:</label>
+                    <select id="operation-type" name="operation_type" required>
+                        <option value="">Выберите тип</option>
+                        <option value="Поступление">Поступление</option>
+                        <option value="Списание">Списание</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="oborotka-amount">Сумма:</label>
+                    <input type="number" id="oborotka-amount" name="amount" step="0.01" min="0.01" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="oborotka-currency">Валюта:</label>
+                    <select id="oborotka-currency" name="currency" required>
+                        <option value="">Выберите валюту</option>
+                        <option value="CHF">CHF</option>
+                        <option value="EUR">EUR</option>
+                        <option value="USDT">USDT</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="oborotka-account">Счёт:</label>
+                    <input type="text" id="oborotka-account" name="account" required placeholder="Номер счета">
+                </div>
+
+                <div class="form-group">
+                    <label for="beneficiary">Бенефициар:</label>
+                    <input type="text" id="beneficiary" name="beneficiary" required placeholder="Имя бенефициара">
+                </div>
+
+                <div class="form-group">
+                    <label for="oborotka-comment">Комментарий:</label>
+                    <textarea id="oborotka-comment" name="comment" rows="3" placeholder="Дополнительная информация"></textarea>
+                </div>
+
+                <button type="submit" class="btn-submit">Отправить</button>
+            </form>
+        </div>
+
+        <!-- Уведомления -->
+        <div id="notification" class="notification"></div>
+    </div>
+
+    <script src="../static/js/app.js"></script>
+</body>
+</html>

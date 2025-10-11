@@ -1,10 +1,10 @@
 import asyncio
 from datetime import datetime
 from loguru import logger
-from config import config
+from shared.config import config
 import gspread_asyncio
 from gspread_asyncio import AsyncioGspreadWorksheet
-from utils.re_msg import parse_message
+from shared.utils.re_msg import parse_message
 # from google-auth package
 from google.oauth2.service_account import Credentials
 
@@ -108,13 +108,14 @@ async def write_for_change_usdt(message: str):
         # Часть Транзакций
         last_row = await get_last_row(tranz, 1)
         data_to_add = [datetime.now().strftime("%d.%m.%Y"), data.get('сумма usdt'), 'Внешний источник',
-                       'Binance' if not data.get('источник сделки', 'Binance').strip() else data.get('источник сделки', 'Binance')]
+                       'Binance' if not data.get('источник сделки', 'Binance').strip() else data.get('источник сделки',
+                                                                                                     'Binance')]
         await add_record_to_table(tranz, last_row, data_to_add, 1, 4)
         data_to_add = [datetime.now().strftime("%d.%m.%Y"), data.get('сумма в фиате'), data.get('фиат счёт'),
                        'Внешний источник']
         await add_record_to_table(tranz, last_row + 1, data_to_add, 1, 4)
     else:
-        part_one = [datetime.now().strftime("%d.%m.%Y"),data.get('сумма в фиате'),
+        part_one = [datetime.now().strftime("%d.%m.%Y"), data.get('сумма в фиате'),
                     data.get('сумма usdt'), await get_current_exchange_rate(aws, data.get('валюта'))]
         part_three = [data.get('менеджер')]
         if 'CHF' in data.get('валюта'):

@@ -1,0 +1,13 @@
+[project]
+name = "bot"
+version = "0.1.1"
+description = "Aiogram bot"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "aiogram>=3.20.0.post0",
+    "gspread-asyncio>=2.0.0",
+    "loguru>=0.7.3",
+    "pydantic-settings>=2.10.1",
+    "python-dotenv>=1.1.1",
+]

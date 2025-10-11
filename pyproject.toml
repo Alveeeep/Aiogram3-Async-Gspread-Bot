@@ -5,12 +5,8 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "aiodns>=3.5.0",
-    "aiogram>=3.20.0.post0",
-    "aiohttp>=3.11.18",
-    "gspread>=6.0",
+    "fastapi>=0.118.3",
     "gspread-asyncio>=2.0.0",
     "loguru>=0.7.3",
-    "pycoingecko>=3.2.0",
-    "pydantic-settings>=2.10.1",
+    "uvicorn>=0.37.0",
 ]

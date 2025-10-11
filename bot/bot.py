@@ -1,8 +1,8 @@
 import asyncio
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters.command import Command
-from handlers import group_checker
-from config import config
+from bot.handlers import group_checker
+from shared.config import config
 from loguru import logger
 
 logger.add(

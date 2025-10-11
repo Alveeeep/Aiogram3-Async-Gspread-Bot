@@ -1,0 +1,14 @@
+[project]
+name = "fastapi"
+version = "0.1.1"
+description = "FastApi app"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi>=0.118.0",
+    "uvicorn>=0.37.0",
+    "gspread-asyncio>=2.0.0",
+    "loguru>=0.7.3",
+    "pydantic-settings>=2.10.1",
+    "python-dotenv>=1.1.1",
+]

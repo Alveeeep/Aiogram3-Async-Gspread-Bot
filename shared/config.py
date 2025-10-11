@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     SHEET_ID: SecretStr
     SERVICE_ACCOUNT_FILE: SecretStr
 
-    model_config = SettingsConfigDict(env_file='.env', env_file_encoding='utf-8')
+    model_config = SettingsConfigDict(env_file='../.env', env_file_encoding='utf-8')
 
 
 config = Settings()
