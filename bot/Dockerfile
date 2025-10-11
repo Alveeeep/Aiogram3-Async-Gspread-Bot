@@ -11,12 +11,11 @@ RUN useradd -m -u 1001 app && \
 WORKDIR /app
 
 COPY --chown=app:app pyproject.toml uv.lock ./
-COPY --chown=app:app bot/pyproject.toml ./bot/
-
-RUN uv sync --locked --package bot --no-dev
 
 COPY --chown=app:app bot/ ./bot/
 COPY --chown=app:app shared/ ./shared/
+
+RUN uv sync --locked --package bot --no-dev
 
 ENV PYTHONUNBUFFERED=1 \
     UV_CACHE_DIR=/home/app/.cache/uv \

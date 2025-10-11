@@ -1,12 +1,7 @@
+[tool.uv.workspace]
+members = ["bot", "webapp"]
+
 [project]
 name = "buhgalter"
-version = "0.1.0"
-description = "Add your description here"
-readme = "README.md"
+version = "0.2.0"
 requires-python = ">=3.13"
-dependencies = [
-    "fastapi>=0.118.3",
-    "gspread-asyncio>=2.0.0",
-    "loguru>=0.7.3",
-    "uvicorn>=0.37.0",
-]
