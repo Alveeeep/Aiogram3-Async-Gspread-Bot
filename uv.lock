@@ -124,7 +124,7 @@ wheels = [
 [[package]]
 name = "bot"
 version = "0.1.1"
-source = { editable = "bot" }
+source = { virtual = "bot" }
 dependencies = [
     { name = "aiogram" },
     { name = "gspread-asyncio" },
@@ -760,7 +760,7 @@ wheels = [
 [[package]]
 name = "webapp"
 version = "0.1.1"
-source = { editable = "webapp" }
+source = { virtual = "webapp" }
 dependencies = [
     { name = "fastapi" },
     { name = "gspread-asyncio" },
