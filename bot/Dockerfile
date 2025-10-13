@@ -16,6 +16,7 @@ COPY --chown=app:app bot/pyproject.toml ./bot/
 COPY --chown=app:app bot/ ./bot/
 COPY --chown=app:app shared/ ./shared/
 
+RUN uv lock
 RUN uv venv
 RUN uv sync --locked --package bot --no-dev
 

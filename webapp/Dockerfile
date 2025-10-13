@@ -16,6 +16,7 @@ COPY --chown=app:app webapp/pyproject.toml ./webapp/
 COPY --chown=app:app webapp/ ./webapp/
 COPY --chown=app:app shared/ ./shared/
 
+RUN uv lock
 RUN uv venv
 RUN uv sync --locked --package webapp --no-dev
 
