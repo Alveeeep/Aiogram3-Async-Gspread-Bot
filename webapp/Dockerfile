@@ -26,4 +26,4 @@ ENV PYTHONUNBUFFERED=1 \
 
 USER app
 
-CMD ["uv", "run", "--package", "bot", "uvicorn", "webapp.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uv", "run", "--package", "webapp", "uvicorn", "webapp.main:app", "--host", "0.0.0.0", "--port", "8000"]
