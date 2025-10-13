@@ -37,7 +37,7 @@ app.add_middleware(
 )
 
 BASE_DIR = Path(__file__).parent
-STATIC_DIR = BASE_DIR / "webapp" / "static"
+STATIC_DIR = BASE_DIR / "static"
 
 # Создаем директорию если не существует
 STATIC_DIR.mkdir(parents=True, exist_ok=True)
