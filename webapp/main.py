@@ -12,7 +12,7 @@ sys.path.append('/app')
 from webapp.api.routes import router
 
 logger.add(
-    "/home/app/logs/webapp.log",
+    "logs/webapp.log",
     rotation="10 MB",
     retention="30 days",
     compression="zip",

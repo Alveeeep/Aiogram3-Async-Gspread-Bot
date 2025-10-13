@@ -5,7 +5,7 @@ services:
       dockerfile: bot/Dockerfile
     container_name: telegram_bot
     volumes:
-      - ./bot/logs:/home/app/logs
+      - ./bot/logs:/app/logs
       - ./credentials.json:/app/credentials.json:ro
     networks:
       - app_network
@@ -26,7 +26,7 @@ services:
       - "8000:8000"
     volumes:
       - ./credentials.json:/app/credentials.json:ro
-      - ./webapp/logs:/home/app/logs
+      - ./webapp/logs:/app/logs
     networks:
       - app_network
     restart: unless-stopped

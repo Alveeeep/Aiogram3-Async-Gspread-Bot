@@ -6,7 +6,7 @@ from shared.config import config
 from loguru import logger
 
 logger.add(
-    "/home/app/logs/bot.log",
+    "logs/bot.log",
     rotation="10 MB",
     retention="30 days",
     compression="zip",

@@ -20,6 +20,8 @@ RUN uv lock
 RUN uv venv
 RUN uv sync --locked --package webapp --no-dev
 
+RUN mkdir -p /app/logs && chown -R app:app /app/logs
+
 ENV PYTHONUNBUFFERED=1 \
     UV_CACHE_DIR=/home/app/.cache/uv \
     PATH="/app/.venv/bin:${PATH}"
