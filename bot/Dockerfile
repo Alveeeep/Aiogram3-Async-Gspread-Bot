@@ -17,7 +17,7 @@ COPY --chown=app:app bot/ ./bot/
 COPY --chown=app:app shared/ ./shared/
 
 RUN uv venv
-RUN uv sync --locked --no-dev
+RUN uv sync --no-dev
 
 ENV PYTHONUNBUFFERED=1 \
     UV_CACHE_DIR=/home/app/.cache/uv \
