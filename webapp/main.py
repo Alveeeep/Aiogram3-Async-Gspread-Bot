@@ -23,7 +23,7 @@ logger.add(
 app = FastAPI(
     title="Transaction Manager API",
     description="API для управления транзакциями через Telegram Mini App",
-    version="1.0.0",
+    version="1.0.1",
     docs_url="/docs",
     redoc_url="/redoc"
 )
