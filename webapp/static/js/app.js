@@ -55,25 +55,56 @@ function showNotification(message, type = 'success') {
     }, 3000);
 }
 
-// Функция отправки формы
+// Функция для преобразования FormData в объект
+function formToJSON(form) {
+    const formData = new FormData(form);
+    const json = {};
+
+    for (const [key, value] of formData.entries()) {
+        // Пропускаем пустые значения для optional полей
+        if (value !== '') {
+            json[key] = value;
+        }
+    }
+
+    return json;
+}
+
+// Функция отправки формы с JSON
 async function submitForm(formId, endpoint) {
     const form = document.getElementById(formId);
-    const formData = new FormData(form);
     const submitButton = form.querySelector('.btn-submit');
+
+    // Проверяем валидность формы
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        tg.HapticFeedback.notificationOccurred('error');
+        return;
+    }
 
     // Блокируем кнопку
     submitButton.disabled = true;
     submitButton.textContent = 'Отправка...';
 
     try {
+        // Преобразуем форму в JSON
+        const jsonData = formToJSON(form);
+
+        console.log('Sending data:', jsonData);
+
         const response = await fetch(endpoint, {
             method: 'POST',
             headers: {
-                // Отправляем данные от Telegram для проверки
+                'Content-Type': 'application/json',
                 'Authorization': tg.initData || '',
             },
-            body: formData
+            body: JSON.stringify(jsonData)
         });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.detail || 'Ошибка сервера');
+        }
 
         const data = await response.json();
 
@@ -94,13 +125,13 @@ async function submitForm(formId, endpoint) {
                 tg.close();
             }, 2000);
         } else {
-            showNotification(data.message, 'error');
+            showNotification(data.message || 'Неизвестная ошибка', 'error');
             tg.HapticFeedback.notificationOccurred('error');
         }
     } catch (error) {
-        showNotification('Ошибка соединения с сервером', 'error');
-        tg.HapticFeedback.notificationOccurred('error');
         console.error('Error:', error);
+        showNotification(error.message || 'Ошибка соединения с сервером', 'error');
+        tg.HapticFeedback.notificationOccurred('error');
     } finally {
         submitButton.disabled = false;
         submitButton.textContent = 'Отправить';
