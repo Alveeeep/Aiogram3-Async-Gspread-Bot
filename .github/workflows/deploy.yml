@@ -32,5 +32,5 @@ jobs:
             echo 'Files:'; ls
             cd projects/buhgalter_bot  # Переходим в папку проекта
             git pull origin master      # Обновляем код
-            docker compose up -d --build --no-cache  # Пересобираем контейнеры (если используете Docker)
+            docker compose up -d --build  # Пересобираем контейнеры (если используете Docker)
           "
