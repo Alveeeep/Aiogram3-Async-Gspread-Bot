@@ -12,18 +12,23 @@ document.documentElement.style.setProperty('--tg-theme-button-color', tg.themePa
 document.documentElement.style.setProperty('--tg-theme-button-text-color', tg.themeParams.button_text_color || '#ffffff');
 document.documentElement.style.setProperty('--tg-theme-secondary-bg-color', tg.themeParams.secondary_bg_color || '#f4f4f5');
 
+// Получаем информацию о пользователе
+console.log('Telegram User:', tg.initDataUnsafe.user);
+console.log('Init Data:', tg.initData);
+
 // Переключение табов
 document.querySelectorAll('.tab-button').forEach(button => {
     button.addEventListener('click', () => {
         const tabName = button.getAttribute('data-tab');
 
-        // Убираем активный класс со всех кнопок и контента
         document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
         document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
 
-        // Добавляем активный класс к выбранной кнопке и контенту
         button.classList.add('active');
         document.getElementById(`${tabName}-tab`).classList.add('active');
+
+        // Вибрация при переключении
+        tg.HapticFeedback.impactOccurred('light');
     });
 });
 
@@ -61,44 +66,39 @@ async function submitForm(formId, endpoint) {
     submitButton.textContent = 'Отправка...';
 
     try {
-        // Конвертируем FormData в объект
-        const data = {};
-        for (let [key, value] of formData.entries()) {
-            data[key] = value;
-        }
-
         const response = await fetch(endpoint, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
+                // Отправляем данные от Telegram для проверки
+                'Authorization': tg.initData || '',
             },
-            body: JSON.stringify(data)
+            body: formData
         });
 
-        const result = await response.json();
+        const data = await response.json();
 
-        if (response.ok && result.success) {
-            showNotification(result.message, 'success');
+        if (data.success) {
+            showNotification(data.message, 'success');
             form.reset();
-
-            // Сбрасываем видимость поля фиат-счета
-            const fiatAccountGroup = document.getElementById('fiat-account-group');
-            if (fiatAccountGroup) {
-                fiatAccountGroup.style.display = 'none';
-            }
 
             // Вибрация успеха
             tg.HapticFeedback.notificationOccurred('success');
 
-            // Закрываем приложение через 2 секунды
+            // Показываем главную кнопку Telegram
+            tg.MainButton.setText('Закрыть');
+            tg.MainButton.show();
+            tg.MainButton.onClick(() => tg.close());
+
+            // Автоматически закрываем через 2 секунды
             setTimeout(() => {
                 tg.close();
             }, 2000);
         } else {
-            throw new Error(result.detail || result.message || 'Ошибка при отправке данных');
+            showNotification(data.message, 'error');
+            tg.HapticFeedback.notificationOccurred('error');
         }
     } catch (error) {
-        showNotification(error.message, 'error');
+        showNotification('Ошибка соединения с сервером', 'error');
         tg.HapticFeedback.notificationOccurred('error');
         console.error('Error:', error);
     } finally {
@@ -110,23 +110,32 @@ async function submitForm(formId, endpoint) {
 // Обработчики форм
 document.getElementById('usdt-form').addEventListener('submit', (e) => {
     e.preventDefault();
+    tg.HapticFeedback.impactOccurred('medium');
     submitForm('usdt-form', '/api/usdt-exchange');
 });
 
 document.getElementById('currency-form').addEventListener('submit', (e) => {
     e.preventDefault();
+    tg.HapticFeedback.impactOccurred('medium');
     submitForm('currency-form', '/api/currency-exchange');
 });
 
 document.getElementById('transfer-form').addEventListener('submit', (e) => {
     e.preventDefault();
+    tg.HapticFeedback.impactOccurred('medium');
     submitForm('transfer-form', '/api/internal-transfer');
 });
 
 document.getElementById('oborotka-form').addEventListener('submit', (e) => {
     e.preventDefault();
+    tg.HapticFeedback.impactOccurred('medium');
     submitForm('oborotka-form', '/api/oborotka');
 });
 
 // Сообщаем Telegram, что приложение готово
 tg.ready();
+
+// Debug информация
+console.log('WebApp version:', tg.version);
+console.log('Platform:', tg.platform);
+console.log('Color scheme:', tg.colorScheme);

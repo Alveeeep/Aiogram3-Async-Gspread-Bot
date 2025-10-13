@@ -1,8 +1,13 @@
-from fastapi import APIRouter, HTTPException
-from fastapi.responses import JSONResponse
+from typing import Optional
 
+from fastapi import APIRouter, HTTPException, Header
+from fastapi.responses import JSONResponse
+import hashlib
+import hmac
+from urllib.parse import unquote
 from loguru import logger
 import sys
+
 
 sys.path.append('/app')
 
@@ -12,6 +17,8 @@ from shared.utils.gsheets import (
     write_for_internal_transfer,
     write_for_oborotka
 )
+
+from shared.config import config
 
 from webapp.schemas.forms import (
     USDTExchangeRequest,
@@ -27,8 +34,60 @@ from webapp.schemas.forms import (
 router = APIRouter(prefix="/api", tags=["transactions"])
 
 
+def validate_telegram_webapp_data(init_data: str, bot_token: str) -> bool:
+    """
+    Проверка подлинности данных от Telegram WebApp
+    https://core.telegram.org/bots/webapps#validating-data-received-via-the-mini-app
+    """
+    try:
+        # Парсим данные
+        parsed_data = dict(pair.split('=', 1) for pair in init_data.split('&'))
+
+        # Извлекаем hash
+        received_hash = parsed_data.pop('hash', None)
+        if not received_hash:
+            return False
+
+        # Сортируем ключи и создаем строку для проверки
+        data_check_string = '\n'.join(
+            f"{k}={unquote(v)}"
+            for k, v in sorted(parsed_data.items())
+        )
+
+        # Вычисляем hash
+        secret_key = hmac.new(
+            key=b"WebAppData",
+            msg=bot_token.encode(),
+            digestmod=hashlib.sha256
+        ).digest()
+
+        calculated_hash = hmac.new(
+            key=secret_key,
+            msg=data_check_string.encode(),
+            digestmod=hashlib.sha256
+        ).hexdigest()
+
+        return calculated_hash == received_hash
+    except Exception as e:
+        logger.error(f"Error validating Telegram data: {e}")
+        return False
+
+
+async def verify_telegram_user(authorization: Optional[str] = Header(None)):
+    """Middleware для проверки запросов от Telegram"""
+    if not authorization:
+        logger.warning("Missing Authorization header")
+        return None
+
+    if not validate_telegram_webapp_data(authorization, config.TOKEN.get_secret_value()):
+        raise HTTPException(status_code=403, detail="Invalid Telegram data")
+
+    return authorization
+
+
 @router.post("/usdt-exchange", response_model=SuccessResponse)
-async def submit_usdt_exchange(request: USDTExchangeRequest):
+async def submit_usdt_exchange(request: USDTExchangeRequest, authorization: Optional[str] = Header(None)):
+    await verify_telegram_user(authorization)
     try:
         logger.info(f"Processing USDT exchange: {request.transaction_type}")
 
@@ -69,7 +128,8 @@ async def submit_usdt_exchange(request: USDTExchangeRequest):
 
 
 @router.post("/currency-exchange", response_model=SuccessResponse)
-async def submit_currency_exchange(request: CurrencyExchangeRequest):
+async def submit_currency_exchange(request: CurrencyExchangeRequest, authorization: Optional[str] = Header(None)):
+    await verify_telegram_user(authorization)
     try:
         logger.info(f"Processing currency exchange: {request.exchange_type}")
 
@@ -116,7 +176,8 @@ async def submit_currency_exchange(request: CurrencyExchangeRequest):
 
 
 @router.post("/internal-transfer", response_model=SuccessResponse)
-async def submit_internal_transfer(request: InternalTransferRequest):
+async def submit_internal_transfer(request: InternalTransferRequest, authorization: Optional[str] = Header(None)):
+    await verify_telegram_user(authorization)
     try:
         logger.info("Processing internal transfer")
 
@@ -143,7 +204,8 @@ async def submit_internal_transfer(request: InternalTransferRequest):
 
 
 @router.post("/oborotka", response_model=SuccessResponse)
-async def submit_oborotka(request: OborotkaRequest):
+async def submit_oborotka(request: OborotkaRequest, authorization: Optional[str] = Header(None)):
+    await verify_telegram_user(authorization)
     try:
         logger.info(f"Processing oborotka: {request.operation_type}")
 

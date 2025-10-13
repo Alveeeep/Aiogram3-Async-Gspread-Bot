@@ -1,6 +1,7 @@
 import asyncio
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters.command import Command
+from aiogram.types import BotCommand, BotCommandScopeDefault, WebAppInfo
 from bot.handlers import group_checker
 from shared.config import config
 from loguru import logger
@@ -14,6 +15,7 @@ logger.add(
     format="{time:YYYY-MM-DD HH:mm:ss} | {level} | {name}:{function}:{line} - {message}"
 )
 ALLOWED_UPDATES = ['message, edited_message']
+WEBAPP_URL = "https://izomorf.ru"
 
 
 # Запуск бота
@@ -26,6 +28,18 @@ async def main():
     @dp.message(Command('start'))
     async def test(message: types.Message):
         await message.answer("Ready")
+
+    commands = [
+        BotCommand(command="start", description="🏠 Главное меню"),
+    ]
+    await bot.set_my_commands(commands, BotCommandScopeDefault())
+
+    await bot.set_chat_menu_button(
+        menu_button=types.MenuButtonWebApp(
+            text="📝 Открыть форму",
+            web_app=WebAppInfo(url=WEBAPP_URL)
+        )
+    )
 
     # Запускаем бота и пропускаем все накопленные входящие
     # Да, этот метод можно вызвать даже если у вас поллинг
