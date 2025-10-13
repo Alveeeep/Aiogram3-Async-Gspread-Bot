@@ -17,7 +17,7 @@ COPY --chown=app:app webapp/ ./webapp/
 COPY --chown=app:app shared/ ./shared/
 
 RUN uv venv
-RUN uv sync --no-dev
+RUN uv sync --locked --package webapp --no-dev
 
 ENV PYTHONUNBUFFERED=1 \
     UV_CACHE_DIR=/home/app/.cache/uv \
@@ -25,4 +25,4 @@ ENV PYTHONUNBUFFERED=1 \
 
 USER app
 
-CMD ["uv", "run", "uvicorn", "webapp.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uv", "run", "--package", "bot", "uvicorn", "webapp.main:app", "--host", "0.0.0.0", "--port", "8000"]
