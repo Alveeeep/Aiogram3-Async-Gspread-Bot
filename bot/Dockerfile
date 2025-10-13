@@ -26,4 +26,4 @@ ENV PYTHONUNBUFFERED=1 \
 
 USER app
 
-CMD ["uv", "run", "--package", "bot", "python", "-m", "bot"]
+CMD ["uv", "run", "--package", "bot", "bot.py"]
