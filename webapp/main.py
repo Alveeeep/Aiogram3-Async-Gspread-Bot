@@ -9,7 +9,7 @@ from pathlib import Path
 
 sys.path.append('/app')
 
-from api.routes import router
+from webapp.api.routes import router
 
 logger.add(
     "logs/webapp.log",
