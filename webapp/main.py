@@ -36,14 +36,21 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.mount("/static", StaticFiles(directory="app/webapp/static"), name="static")
+BASE_DIR = Path(__file__).parent
+STATIC_DIR = BASE_DIR / "webapp" / "static"
+
+# Создаем директорию если не существует
+STATIC_DIR.mkdir(parents=True, exist_ok=True)
+
+# Монтируем статические файлы с правильным путем
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 app.include_router(router)
 
 
 @app.get("/", response_class=HTMLResponse)
 async def index():
-    html_path = Path("app/webapp/static/index.html")
+    html_path = Path(BASE_DIR / "static" / "index.html")
     if html_path.exists():
         return FileResponse(html_path)
     return HTMLResponse(content="<h1>File not found</h1>", status_code=404)
