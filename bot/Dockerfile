@@ -16,7 +16,7 @@ COPY --chown=app:app bot/pyproject.toml ./bot/
 COPY --chown=app:app bot/ ./bot/
 COPY --chown=app:app shared/ ./shared/
 
-RUN uv sync --no-dev
+RUN uv sync --locked --package bot --no-dev
 
 ENV PYTHONUNBUFFERED=1 \
     UV_CACHE_DIR=/home/app/.cache/uv \
@@ -24,4 +24,4 @@ ENV PYTHONUNBUFFERED=1 \
 
 USER app
 
-CMD ["uv", "run", "python", "-m", "bot"]
+CMD ["uv", "run", "--package", "bot", "python", "-m", "bot"]

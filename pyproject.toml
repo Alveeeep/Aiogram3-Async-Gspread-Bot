@@ -1,7 +1,5 @@
 [tool.uv.workspace]
 members = ["bot", "webapp"]
 
-[project]
-name = "buhgalter"
-version = "0.2.0"
-requires-python = ">=3.13"
+[tool.uv]
+dev-dependencies = []
