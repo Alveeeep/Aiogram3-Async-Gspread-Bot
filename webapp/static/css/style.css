@@ -38,11 +38,10 @@ h1 {
 
 /* Табы */
 .tabs {
-    display: flex;
-    gap: 5px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
     margin-bottom: 20px;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
 }
 
 .tab-button {
