@@ -65,19 +65,26 @@
                     <input type="text" id="fiat-account" name="fiat_account" placeholder="Введите номер счета">
                 </div>
 
+                <!-- Динамические списки -->
                 <div class="form-group">
                     <label for="source">Источник сделки:</label>
-                    <input type="text" id="source" name="source" value="Binance" placeholder="Источник сделки">
+                    <select id="source" name="source" required>
+                        <option value="" disabled selected>Загрузка...</option>
+                    </select>
                 </div>
 
                 <div class="form-group">
                     <label for="from-bot-usdt">Из бота:</label>
-                    <input type="text" id="from-bot-usdt" name="from_bot" value="Нет" placeholder="Название бота">
+                    <select id="from-bot-usdt" name="from_bot" required>
+                        <option value="" disabled selected>Загрузка...</option>
+                    </select>
                 </div>
 
                 <div class="form-group">
                     <label for="manager-usdt">Менеджер:</label>
-                    <input type="text" id="manager-usdt" name="manager" placeholder="Имя менеджера">
+                    <select id="manager-usdt" name="manager" required>
+                        <option value="" disabled selected>Загрузка...</option>
+                    </select>
                 </div>
 
                 <button type="submit" class="btn-submit">Отправить</button>
@@ -128,46 +135,45 @@
 
                 <div class="form-group">
                     <label for="manager-currency">Менеджер:</label>
-                    <input type="text" id="manager-currency" name="manager" placeholder="Имя менеджера">
+                    <select id="manager-currency" name="manager" required>
+                        <option value="" disabled selected>Загрузка...</option>
+                    </select>
                 </div>
 
                 <div class="form-group">
                     <label for="from-bot-currency">Из бота:</label>
-                    <input type="text" id="from-bot-currency" name="from_bot" value="Нет" placeholder="Название бота">
+                    <select id="from-bot-currency" name="from_bot" required>
+                        <option value="" disabled selected>Загрузка...</option>
+                    </select>
                 </div>
 
                 <button type="submit" class="btn-submit">Отправить</button>
             </form>
         </div>
 
-        <!-- Форма внутреннего перевода -->
+        <!-- Формы transfer и oborotka без изменений -->
         <div id="transfer-tab" class="tab-content">
             <form id="transfer-form" class="form">
                 <div class="form-group">
                     <label for="transfer-amount">Сумма:</label>
                     <input type="number" id="transfer-amount" name="amount" step="0.01" min="0.01" required>
                 </div>
-
                 <div class="form-group">
                     <label for="from-account-transfer">Счёт откуда:</label>
                     <input type="text" id="from-account-transfer" name="from_account" required placeholder="Счет списания">
                 </div>
-
                 <div class="form-group">
                     <label for="to-account-transfer">Счёт куда:</label>
                     <input type="text" id="to-account-transfer" name="to_account" required placeholder="Счет зачисления">
                 </div>
-
                 <div class="form-group">
                     <label for="transfer-comment">Комментарий:</label>
                     <textarea id="transfer-comment" name="comment" rows="3" placeholder="Дополнительная информация"></textarea>
                 </div>
-
                 <button type="submit" class="btn-submit">Отправить</button>
             </form>
         </div>
 
-        <!-- Форма оборотки -->
         <div id="oborotka-tab" class="tab-content">
             <form id="oborotka-form" class="form">
                 <div class="form-group">
@@ -178,12 +184,10 @@
                         <option value="Списание">Списание</option>
                     </select>
                 </div>
-
                 <div class="form-group">
                     <label for="oborotka-amount">Сумма:</label>
                     <input type="number" id="oborotka-amount" name="amount" step="0.01" min="0.01" required>
                 </div>
-
                 <div class="form-group">
                     <label for="oborotka-currency">Валюта:</label>
                     <select id="oborotka-currency" name="currency" required>
@@ -193,27 +197,22 @@
                         <option value="USDT">USDT</option>
                     </select>
                 </div>
-
                 <div class="form-group">
                     <label for="oborotka-account">Счёт:</label>
                     <input type="text" id="oborotka-account" name="account" required placeholder="Номер счета">
                 </div>
-
                 <div class="form-group">
                     <label for="beneficiary">Бенефициар:</label>
                     <input type="text" id="beneficiary" name="beneficiary" required placeholder="Имя бенефициара">
                 </div>
-
                 <div class="form-group">
                     <label for="oborotka-comment">Комментарий:</label>
                     <textarea id="oborotka-comment" name="comment" rows="3" placeholder="Дополнительная информация"></textarea>
                 </div>
-
                 <button type="submit" class="btn-submit">Отправить</button>
             </form>
         </div>
 
-        <!-- Уведомления -->
         <div id="notification" class="notification"></div>
     </div>
 

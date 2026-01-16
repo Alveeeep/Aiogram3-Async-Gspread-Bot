@@ -8,7 +8,6 @@ from urllib.parse import unquote
 from loguru import logger
 import sys
 
-
 sys.path.append('/app')
 
 from shared.utils.gsheets import (
@@ -28,7 +27,7 @@ from webapp.schemas.forms import (
     SuccessResponse,
     TransactionType,
     ExchangeType,
-    OperationType
+    OperationType, OptionsResponse, OptionItem
 )
 
 router = APIRouter(prefix="/api", tags=["transactions"])
@@ -232,3 +231,35 @@ async def submit_oborotka(request: OborotkaRequest, authorization: Optional[str]
     except Exception as e:
         logger.error(f"Error in submit_oborotka: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/options", response_model=OptionsResponse)
+async def get_options(authorization: Optional[str] = Header(None)):
+    """
+    Возвращает справочники для выпадающих списков в Mini App.
+    Требует валидный initData в заголовке Authorization.
+    """
+    await verify_telegram_user(authorization)
+
+    # 💡 Здесь можно подключить БД или кэш вместо хардкода
+    options = OptionsResponse(
+        sources=[
+            OptionItem(id="binance", name="Binance"),
+            OptionItem(id="bybit", name="Bybit"),
+            OptionItem(id="okx", name="OKX"),
+            OptionItem(id="manual", name="Вручную"),
+        ],
+        bots=[
+            OptionItem(id="none", name="Нет"),
+            OptionItem(id="bot", name="Бот")
+        ],
+        managers=[
+            OptionItem(id="alexey", name="Алексей"),
+            OptionItem(id="maria", name="Мария"),
+            OptionItem(id="ivan", name="Иван"),
+            OptionItem(id="anastasia", name="Анастасия"),
+        ]
+    )
+
+    logger.info("Returning options for Mini App")
+    return options

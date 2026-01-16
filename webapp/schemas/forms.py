@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Optional, List
 from enum import Enum
 
 
@@ -68,3 +68,14 @@ class OborotkaRequest(BaseModel):
 class SuccessResponse(BaseModel):
     success: bool
     message: str
+
+
+class OptionItem(BaseModel):
+    id: str
+    name: str
+
+
+class OptionsResponse(BaseModel):
+    sources: List[OptionItem]
+    bots: List[OptionItem]
+    managers: List[OptionItem]
