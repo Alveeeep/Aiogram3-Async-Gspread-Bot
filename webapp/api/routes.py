@@ -245,9 +245,7 @@ async def get_options(authorization: Optional[str] = Header(None)):
     options = OptionsResponse(
         sources=[
             OptionItem(id="binance", name="Binance"),
-            OptionItem(id="bybit", name="Bybit"),
-            OptionItem(id="okx", name="OKX"),
-            OptionItem(id="manual", name="Вручную"),
+            OptionItem(id="manual", name="Внешний источник"),
         ],
         bots=[
             OptionItem(id="none", name="Нет"),
